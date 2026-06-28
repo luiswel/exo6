@@ -22,4 +22,11 @@
 //     appId: "1:1234567890:web:abcdef123456"
 //   };
 //
-window.FIREBASE_CONFIG = null;
+window.FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBcDjU7SAEQ2Ia5hM3nwWi8g11MeWW_mfs",
+  authDomain: "exo6-guide.firebaseapp.com",
+  projectId: "exo6-guide",
+  storageBucket: "exo6-guide.firebasestorage.app",
+  messagingSenderId: "1007407863820",
+  appId: "1:1007407863820:web:3ea42f17af24001eb5b629"
+};
