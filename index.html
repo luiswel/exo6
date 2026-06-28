@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Exoplanets 6 — Porto 2026 · Guide</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --line:#2a3344;
+    --txt:#e6edf3; --muted:#8b98a9; --faint:#5b6675;
+    --t1:#3b82f6; --t2:#10b981; --t3:#f59e0b; --t4:#a855f7; --t0:#ec4899;
+    --star:#fcd34d; --accent:#38bdf8;
+    --shadow:0 6px 24px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:15px;line-height:1.4;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  button{font-family:inherit;cursor:pointer}
+  .wrap{max-width:1280px;margin:0 auto;padding:0 14px 80px}
+
+  header{position:sticky;top:0;z-index:40;background:rgba(13,17,23,.92);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .hbar{max-width:1280px;margin:0 auto;padding:10px 14px;display:flex;
+    align-items:center;gap:12px;flex-wrap:wrap}
+  .brand{display:flex;flex-direction:column;line-height:1.15;margin-right:auto}
+  .brand b{font-size:18px;letter-spacing:.2px}
+  .brand span{font-size:12px;color:var(--muted)}
+  .who{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px;
+    background:var(--panel);border:1px solid var(--line);padding:5px 10px;border-radius:20px}
+  .who b{color:var(--txt)}
+  .who button{background:none;border:none;color:var(--accent);font-size:12px;padding:0}
+
+  .tabs{display:flex;gap:6px;overflow:auto;padding:8px 14px 0;max-width:1280px;margin:0 auto}
+  .tab{background:var(--panel);border:1px solid var(--line);color:var(--muted);
+    padding:8px 14px;border-radius:10px 10px 0 0;font-size:14px;white-space:nowrap;
+    border-bottom:none;display:flex;align-items:center;gap:6px}
+  .tab.active{background:var(--panel2);color:var(--txt);box-shadow:inset 0 2px 0 var(--accent)}
+  .tab .cnt{background:var(--line);border-radius:10px;font-size:11px;padding:1px 7px}
+
+  .controls{background:var(--panel2);border:1px solid var(--line);border-top:none;
+    padding:12px;border-radius:0 0 12px 12px;margin-bottom:16px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .row + .row{margin-top:10px}
+  .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--faint);
+    margin-right:4px;min-width:46px}
+  input[type=search]{flex:1;min-width:160px;background:var(--bg);border:1px solid var(--line);
+    color:var(--txt);padding:9px 12px;border-radius:9px;font-size:14px}
+  .chip{background:var(--panel);border:1px solid var(--line);color:var(--muted);
+    padding:5px 11px;border-radius:18px;font-size:12.5px;display:inline-flex;align-items:center;gap:6px}
+  .chip .dot{width:9px;height:9px;border-radius:50%}
+  .chip.on{color:#fff;border-color:transparent}
+  .chip.muted-toggle.on{background:var(--accent);color:#04222e;border-color:transparent}
+  .clearbtn{background:none;border:none;color:var(--faint);font-size:12px;text-decoration:underline}
+
+  /* day selector */
+  .days{display:flex;gap:6px;flex-wrap:wrap}
+  .dbtn{background:var(--panel);border:1px solid var(--line);color:var(--muted);
+    border-radius:9px;padding:7px 12px;font-size:13px;text-align:center;line-height:1.2}
+  .dbtn b{display:block;color:var(--txt);font-size:14px}
+  .dbtn small{font-size:11px;color:var(--faint)}
+  .dbtn.active{border-color:var(--accent);background:var(--panel2)}
+  .dbtn.active b{color:var(--accent)}
+
+  /* ---- DAY TIMETABLE ---- */
+  .tt-head{display:grid;grid-template-columns:54px repeat(var(--cols,3),1fr);gap:8px;
+    position:sticky;top:108px;z-index:20;background:var(--bg);padding:6px 0 4px}
+  .tt-head .rh{font-size:12.5px;font-weight:600;color:var(--muted);text-align:center;
+    padding:6px;background:var(--panel);border:1px solid var(--line);border-radius:8px}
+  .tt-grid{position:relative;display:grid;grid-template-columns:54px repeat(var(--cols,3),1fr);gap:8px}
+  .axis{position:relative}
+  .axis .tick{position:absolute;right:6px;font-size:11px;color:var(--faint);transform:translateY(-50%)}
+  .col{position:relative;border-left:1px solid var(--line)}
+  .gridline{position:absolute;left:0;right:0;border-top:1px dashed #20262f;pointer-events:none}
+  .band{position:absolute;left:0;right:0;background:repeating-linear-gradient(45deg,#171c24,#171c24 8px,#14181f 8px,#14181f 16px);
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:11px;
+    letter-spacing:.5px;text-transform:uppercase;z-index:1}
+  .blk{position:absolute;left:3px;right:3px;border-radius:8px;padding:3px 7px;overflow:hidden;
+    border:1px solid var(--line);background:var(--panel);z-index:2;border-left-width:4px;
+    transition:transform .06s ease, box-shadow .06s ease}
+  .blk:hover{transform:translateY(-1px);box-shadow:var(--shadow);z-index:5;overflow:visible}
+  .blk .bt{font-size:12px;font-weight:600;margin:0;cursor:pointer;line-height:1.18}
+  .blk .bs{font-size:11.5px;color:var(--muted);cursor:pointer;margin-top:1px}
+  .blk .btime{font-size:10px;color:var(--faint);line-height:1.1}
+  .blk.fav{box-shadow:inset 0 0 0 1px var(--star)}
+  .blk .star{position:absolute;top:4px;right:5px;font-size:14px;opacity:.35;background:none;border:none;padding:0;color:var(--star)}
+  .blk .star.on{opacity:1}
+  .blk .nb{position:absolute;bottom:3px;right:6px;font-size:10px;color:var(--accent)}
+  /* time-block options summary (shows parallel themes for each slot) */
+  .slots{display:flex;flex-direction:column;gap:10px;margin:6px 0 18px}
+  .slot{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .slot .stime{font-size:12px;color:var(--faint);font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+  .slot .par-tag{background:rgba(245,158,11,.15);color:var(--t3);border:1px solid rgba(245,158,11,.35);
+    font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;border-radius:20px;padding:1px 9px}
+  .opts{display:grid;gap:8px;grid-template-columns:minmax(0,1fr)}
+  .opt{border-left:4px solid var(--line);background:var(--panel2);border-radius:0 9px 9px 0;padding:7px 11px;min-width:0}
+  .opt .oth{overflow-wrap:anywhere}
+  .opt .or{font-size:11px;color:var(--muted);font-weight:600}
+  .opt .oth{font-size:14px;font-weight:600;line-height:1.25;margin:1px 0}
+  .opt .ott{font-size:11.5px;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  /* ---- WEEK OVERVIEW ---- */
+  .week{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+  .wday{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;min-width:0}
+  .wday h3{margin:0 0 8px;font-size:14px;display:flex;justify-content:space-between;align-items:baseline}
+  .wday h3 small{color:var(--faint);font-weight:400;font-size:11px}
+  .wsess{border-left:3px solid var(--line);padding:5px 0 5px 9px;margin-bottom:9px}
+  .wsess .wtime{font-size:10.5px;color:var(--faint)}
+  .wsess .wtheme{font-size:12.5px;font-weight:600;line-height:1.25}
+  .wsess .wroom{font-size:11px;color:var(--muted)}
+  .wsess.par{background:var(--panel2);border-radius:0 8px 8px 0}
+  .par-label{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin:2px 0}
+  .wmini{font-size:11.5px;color:var(--muted);cursor:pointer;padding:1px 0}
+  .wmini:hover{color:var(--txt)}
+
+  /* ---- LIST / SEARCH ---- */
+  .list{display:flex;flex-direction:column;gap:7px}
+  .card{background:var(--panel);border:1px solid var(--line);border-left-width:4px;
+    border-radius:10px;padding:10px 12px;display:flex;gap:10px;align-items:flex-start}
+  .card:hover{background:var(--panel2)}
+  .card .meta{font-size:11.5px;color:var(--faint);display:flex;gap:8px;flex-wrap:wrap}
+  .card .ct{font-size:14px;font-weight:600;margin:2px 0;cursor:pointer}
+  .card .cs{font-size:13px;color:var(--muted)}
+  .tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+  .tg{font-size:10.5px;background:var(--panel2);border:1px solid var(--line);
+    color:var(--muted);border-radius:6px;padding:1px 7px}
+  .invited{font-size:10px;background:rgba(252,211,77,.15);color:var(--star);
+    border:1px solid rgba(252,211,77,.3);border-radius:6px;padding:1px 6px}
+  .cstar{background:none;border:none;font-size:20px;color:var(--star);opacity:.3;padding:0;line-height:1;margin-left:auto}
+  .cstar.on{opacity:1}
+  .empty{color:var(--muted);text-align:center;padding:40px;font-size:14px}
+  .daygroup{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;
+    margin:16px 0 8px;border-bottom:1px solid var(--line);padding-bottom:5px}
+  .conflict{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);color:#fca5a5;
+    font-size:12px;border-radius:8px;padding:7px 10px;margin:6px 0}
+
+  /* ---- MODAL ---- */
+  .mask{position:fixed;inset:0;background:rgba(2,6,12,.72);z-index:100;display:none;
+    align-items:flex-start;justify-content:center;padding:24px 12px;overflow:auto}
+  .mask.show{display:flex}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    width:100%;max-width:640px;box-shadow:var(--shadow);overflow:hidden}
+  .mhead{padding:16px 18px;border-bottom:1px solid var(--line);border-top:5px solid var(--line);position:relative}
+  .mhead .x{position:absolute;top:12px;right:12px;background:var(--panel2);border:1px solid var(--line);
+    color:var(--muted);border-radius:8px;width:30px;height:30px;font-size:16px}
+  .mhead .mmeta{font-size:12px;color:var(--faint);display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+  .mhead h2{margin:0;font-size:18px;line-height:1.3;padding-right:30px}
+  .mhead .mspk{font-size:14px;color:var(--accent);margin-top:4px}
+  .mhead .mtheme{font-size:12.5px;color:var(--muted);margin-top:6px}
+  .mbody{padding:16px 18px}
+  .mbody h4{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);
+    display:flex;align-items:center;gap:8px}
+  .note{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:9px}
+  .note .nh{display:flex;justify-content:space-between;font-size:12px;color:var(--faint);margin-bottom:4px}
+  .note .nh b{color:var(--accent)}
+  .note .ntext{white-space:pre-wrap;font-size:13.5px}
+  .note .nph{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .note .nph img{width:84px;height:84px;object-fit:cover;border-radius:8px;cursor:pointer;border:1px solid var(--line)}
+  .note .del{background:none;border:none;color:var(--faint);font-size:11px;text-decoration:underline}
+  textarea{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--txt);
+    border-radius:9px;padding:10px;font-family:inherit;font-size:14px;resize:vertical;min-height:70px}
+  .noteform{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+  .formrow{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+  .btn{background:var(--accent);color:#04222e;border:none;border-radius:9px;padding:9px 16px;font-weight:600;font-size:14px}
+  .btn.ghost{background:var(--panel2);color:var(--txt);border:1px solid var(--line)}
+  .btn:disabled{opacity:.5}
+  .filebtn{font-size:13px;color:var(--accent)}
+  .thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .thumbs .tw{position:relative}
+  .thumbs img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+  .thumbs .rm{position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;border:none;
+    border-radius:50%;width:20px;height:20px;font-size:12px}
+  .nostore{font-size:12.5px;color:var(--faint);background:var(--panel2);border:1px dashed var(--line);
+    border-radius:10px;padding:12px}
+  .imgview{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;display:none;
+    align-items:center;justify-content:center;padding:20px}
+  .imgview.show{display:flex}
+  .imgview img{max-width:100%;max-height:100%;border-radius:10px}
+
+  .legend{font-size:11.5px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+  .legend .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:-1px}
+  .hint{font-size:12px;color:var(--faint);margin:2px 0 0}
+  .evening{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .evening b{color:var(--t0)}
+
+  @media(max-width:780px){
+    .week{grid-template-columns:1fr}
+    .tt-head,.tt-grid{grid-template-columns:40px repeat(var(--cols,3),1fr);gap:4px}
+    .tt-head{top:0;position:relative}
+    .blk{padding:4px 5px}
+    .blk .bt{font-size:11.5px}
+    .brand b{font-size:16px}
+    .modal{max-width:100%}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="hbar">
+    <div class="brand">
+      <b>🪐 Exoplanets 6 · Porto 2026</b>
+      <span id="subtitle">28 June – 3 July 2026 · personal conference guide</span>
+    </div>
+    <div class="who" id="whoBox"></div>
+  </div>
+  <div class="tabs" id="tabs"></div>
+</header>
+
+<div class="wrap">
+  <div class="controls" id="controls"></div>
+  <div id="view"></div>
+</div>
+
+<!-- talk modal -->
+<div class="mask" id="mask"><div class="modal" id="modal"></div></div>
+<!-- fullscreen image -->
+<div class="imgview" id="imgview"><img id="imgviewImg" src="" alt=""></div>
+
+<script src="data.js"></script>
+<script src="firebase-config.js"></script>
+<!-- Firebase (only used if firebase-config.js has a config) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* ============================ STATE & INDEXES ============================ */
+const DATA = window.SCHEDULE;
+const TOPICS = DATA.topics;
+const DAYS = DATA.days;
+const TALKS = DATA.talks;
+const SESSIONS = DATA.sessions;
+const talkById = Object.fromEntries(TALKS.map(t=>[t.id,t]));
+const sessById = Object.fromEntries(SESSIONS.map(s=>[s.id,s]));
+const ROOMS = DATA.meta.rooms;
+const topicColor = n => `var(--t${n})`;
+const ALL_TAGS = [...new Set(TALKS.flatMap(t=>t.tags))].sort();
+
+const LS = {
+  get:(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},
+  set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))
+};
+let state = {
+  view: LS.get('exo6_view','day'),
+  day: LS.get('exo6_day','Monday'),
+  topics: new Set(LS.get('exo6_topics',[])),     // empty = all
+  rooms: new Set(LS.get('exo6_rooms',[])),
+  tag: LS.get('exo6_tag',''),
+  q: '',
+  favOnly:false
+};
+let favs = new Set(LS.get('exo6_favs',[]));
+let myName = LS.get('exo6_name','');
+let noteCounts = {};   // talkId -> count (from firebase)
+let db = null, fbReady=false;
+
+function saveFilters(){
+  LS.set('exo6_topics',[...state.topics]);
+  LS.set('exo6_rooms',[...state.rooms]);
+  LS.set('exo6_tag',state.tag);
+  LS.set('exo6_view',state.view);
+  LS.set('exo6_day',state.day);
+}
+const mins = h => (+h.slice(0,2))*60 + (+h.slice(3));
+const esc = s => (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ============================ FILTERING ============================ */
+function passFilters(t){
+  if(state.topics.size && !state.topics.has(String(t.topic))) return false;
+  if(state.rooms.size && !state.rooms.has(t.room)) return false;
+  if(state.tag && !t.tags.includes(state.tag)) return false;
+  if(state.favOnly && !favs.has(t.id)) return false;
+  if(state.q){
+    const q=state.q.toLowerCase();
+    const hay=(t.title+' '+t.speaker+' '+t.theme+' '+t.tags.join(' ')+' '+t.chair).toLowerCase();
+    if(!hay.includes(q)) return false;
+  }
+  return true;
+}
+
+/* ============================ TABS ============================ */
+const TABS=[
+  {id:'day',label:'📅 By day'},
+  {id:'week',label:'🗓️ Week overview'},
+  {id:'search',label:'🔍 Search all'},
+  {id:'agenda',label:'⭐ My agenda'},
+  {id:'about',label:'ℹ️ Notes & sharing'}
+];
+function renderTabs(){
+  document.getElementById('tabs').innerHTML = TABS.map(t=>{
+    const cnt = t.id==='agenda' && favs.size ? `<span class="cnt">${favs.size}</span>`:'';
+    return `<button class="tab ${state.view===t.id?'active':''}" data-tab="${t.id}">${t.label}${cnt}</button>`;
+  }).join('');
+}
+
+/* ============================ CONTROLS ============================ */
+function topicChips(){
+  return [1,2,3,4,0].map(n=>{
+    const on=state.topics.has(String(n));
+    return `<button class="chip ${on?'on':''}" data-topic="${n}"
+      style="${on?`background:${topicColor(n)}`:''}">
+      <span class="dot" style="background:${topicColor(n)}"></span>${esc(TOPICS[n].name)}</button>`;
+  }).join('');
+}
+function renderControls(){
+  const c=document.getElementById('controls');
+  if(state.view==='about'){ c.style.display='none'; return; } c.style.display='';
+  let html='';
+  if(state.view==='day'){
+    html += `<div class="row days">`+DAYS.map(d=>{
+      const has = TALKS.some(t=>t.day===d.name) || DATA.events.some(e=>e.day===d.name);
+      if(!has) return '';
+      const dd=new Date(d.date+'T00:00');
+      return `<button class="dbtn ${state.day===d.name?'active':''}" data-day="${d.name}">
+        <b>${d.name.slice(0,3)}</b><small>${dd.getDate()} ${dd.toLocaleString('en',{month:'short'})}</small></button>`;
+    }).join('')+`</div>`;
+  }
+  html += `<div class="row"><span class="lbl">Topic</span>${topicChips()}
+     <button class="clearbtn" data-clear="topics">reset</button></div>`;
+  html += `<div class="row"><span class="lbl">Room</span>`+
+     ROOMS.map(r=>`<button class="chip muted-toggle ${state.rooms.has(r)?'on':''}" data-room="${esc(r)}">${esc(r)}</button>`).join('')+
+     `</div>`;
+  html += `<div class="row"><span class="lbl">Theme</span>
+     <select id="tagSel" style="background:var(--bg);border:1px solid var(--line);color:var(--txt);padding:7px 10px;border-radius:8px;font-size:13px">
+       <option value="">All themes / tags…</option>
+       ${ALL_TAGS.map(t=>`<option value="${esc(t)}" ${state.tag===t?'selected':''}>${esc(t)}</option>`).join('')}
+     </select>
+     <input type="search" id="q" placeholder="Search speaker, title, planet…" value="${esc(state.q)}">
+     <button class="chip muted-toggle ${state.favOnly?'on':''}" data-favonly="1">⭐ Starred only</button>
+     </div>`;
+  html += `<div class="legend">`+[1,2,3,4].map(n=>`<span><span class="dot" style="background:${topicColor(n)}"></span>${esc(TOPICS[n].long)}</span>`).join('')+`</div>`;
+  c.innerHTML=html;
+}
+
+/* ============================ DAY TIMETABLE ============================ */
+function renderDay(){
+  const v=document.getElementById('view');
+  const day=state.day;
+  const dayTalks=TALKS.filter(t=>t.day===day);
+  const dayEvents=DATA.events.filter(e=>e.day===day);
+  if(!dayTalks.length){
+    // e.g. Sunday — just show events
+    const ev=dayEvents.map(e=>`<div><b>${e.start}${e.end?'–'+e.end:''}</b> · ${esc(e.label)}</div>`).join('');
+    v.innerHTML=`<div class="evening">${ev||'No sessions scheduled.'}</div>`; return;
+  }
+  let cols=ROOMS.filter(r=>dayTalks.some(t=>t.room===r));
+  if(state.rooms.size){ const f=cols.filter(r=>state.rooms.has(r)); if(f.length)cols=f; }
+
+  /* ---- time-block options summary (the "what are my options" view) ---- */
+  const sess=SESSIONS.filter(s=>s.day===day).sort((a,b)=>mins(a.start)-mins(b.start));
+  const byStart={}; sess.forEach(s=>{(byStart[s.start+'|'+s.end]=byStart[s.start+'|'+s.end]||[]).push(s)});
+  let slots='';
+  Object.keys(byStart).sort((a,b)=>mins(a.split('|')[0])-mins(b.split('|')[0])).forEach(k=>{
+    const grp=byStart[k].filter(s=>!state.rooms.size||state.rooms.has(s.room));
+    if(!grp.length) return;
+    const [st,en]=k.split('|');
+    const parallel=byStart[k].length>1;
+    slots+=`<div class="slot"><div class="stime">🕑 ${st}–${en}
+      ${parallel?`<span class="par-tag">▶ ${byStart[k].length} parallel — choose one</span>`:'<span style="color:var(--faint);font-weight:400">single track</span>'}</div>
+      <div class="opts">`+grp.map(s=>{
+        const first=talkById[s.talks[0]];
+        const names=s.talks.map(id=>talkById[id].speaker).slice(0,3).join(', ')+(s.talks.length>3?` +${s.talks.length-3} more`:'');
+        return `<div class="opt" style="border-left-color:${topicColor(s.topic)}">
+          <div class="or">${esc(s.room)} · ${esc(TOPICS[s.topic].name)}${s.chair&&s.chair!=='—'?' · chair '+esc(s.chair):''}</div>
+          <div class="oth">${esc(s.theme)}</div>
+          <div class="ott">${esc(names)}</div></div>`;
+      }).join('')+`</div></div>`;
+  });
+
+  /* ---- detailed timetable grid ---- */
+  const allStarts=dayTalks.map(t=>mins(t.start)).concat(dayEvents.filter(e=>['break','plenary','logistics'].includes(e.type)).map(e=>mins(e.start)));
+  const allEnds=dayTalks.map(t=>mins(t.end)).concat(dayEvents.filter(e=>['break','plenary','logistics'].includes(e.type)).map(e=>mins(e.end)));
+  let t0=Math.floor(Math.min(...allStarts)/60)*60, t1=Math.ceil(Math.max(...allEnds)/60)*60;
+  const SCALE=2.4, H=(t1-t0)*SCALE, y=m=>(m-t0)*SCALE;
+
+  let head=`<div class="rh">⏱</div>`+cols.map(r=>`<div class="rh">${esc(r)}</div>`).join('');
+  let axis='';
+  for(let m=t0;m<=t1;m+=30){
+    axis+=`<div class="tick" style="top:${y(m)}px">${m%60===0?String(m/60|0).padStart(2,'0')+':00':''}</div>`;
+  }
+  let body='';
+  cols.forEach(room=>{
+    let col=`<div class="col" style="height:${H}px">`;
+    for(let m=t0;m<=t1;m+=30) col+=`<div class="gridline" style="top:${y(m)}px"></div>`;
+    dayEvents.filter(e=>e.type==='break').forEach(e=>{
+      col+=`<div class="band" style="top:${y(mins(e.start))}px;height:${(mins(e.end)-mins(e.start))*SCALE}px">${esc(e.label)}</div>`;
+    });
+    dayTalks.filter(t=>t.room===room).forEach(t=>{
+      if(!passFilters(t)) return;
+      const top=y(mins(t.start)), h=Math.max((mins(t.end)-mins(t.start))*SCALE,30);
+      const isFav=favs.has(t.id);
+      const nb=noteCounts[t.id]?`<span class="nb">💬 ${noteCounts[t.id]}</span>`:'';
+      col+=`<div class="blk ${isFav?'fav':''}" data-open="${t.id}"
+        style="top:${top}px;height:${h-2}px;border-left-color:${topicColor(t.topic)}">
+        <button class="star ${isFav?'on':''}" data-fav="${t.id}">★</button>
+        <div class="btime">${t.start}${t.invited?' · invited':''}</div>
+        <div class="bt">${esc(t.speaker)}</div>
+        ${h>=68?`<div class="bs">${esc(t.title)}</div>`:''}
+        ${nb}</div>`;
+    });
+    body+=col+`</div>`;
+  });
+
+  const dd=new Date(DAYS.find(d=>d.name===day).date+'T00:00');
+  const evening = dayEvents.filter(e=>e.type==='social'||(e.type==='plenary'&&/Welcome/.test(e.label))).map(e=>
+    `<div><b>${e.start}${e.end?'–'+e.end:''}</b> · ${esc(e.label)}</div>`).join('');
+  v.innerHTML=`
+    <p class="hint">Showing <b>${day} ${dd.getDate()} ${dd.toLocaleString('en',{month:'long'})}</b>. The cards below summarise each time-slot's options (themes per room); the grid underneath is the detailed timetable. Tap any talk for details &amp; shared notes; tap ★ to add to your agenda.</p>
+    <div class="slots">${slots}</div>
+    <h4 style="font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:0 0 6px">Detailed timetable</h4>
+    <div style="--cols:${cols.length}">
+      <div class="tt-head">${head}</div>
+      <div class="tt-grid"><div class="axis">${axis}</div>${body}</div>
+    </div>
+    ${evening?`<div class="evening">🌙 <b>Evening / off-programme</b><br>${evening}</div>`:''}`;
+}
+
+/* ============================ WEEK OVERVIEW ============================ */
+function renderWeek(){
+  const v=document.getElementById('view');
+  const weekdays=DAYS.filter(d=>['Monday','Tuesday','Wednesday','Thursday','Friday'].includes(d.name));
+  let html=`<p class="hint">Whole-week glance. Each card is a session block; <span style="color:var(--t3)">parallel</span> blocks list the simultaneous room options — click one to jump in. Use “By day” for the detailed timetable.</p><div class="week">`;
+  weekdays.forEach(d=>{
+    const dd=new Date(d.date+'T00:00');
+    html+=`<div class="wday"><h3>${d.name}<small>${dd.getDate()} ${dd.toLocaleString('en',{month:'short'})}</small></h3>`;
+    // group sessions of the day by start time
+    const sess=SESSIONS.filter(s=>s.day===d.name).sort((a,b)=>mins(a.start)-mins(b.start));
+    const byStart={};
+    sess.forEach(s=>{(byStart[s.start]=byStart[s.start]||[]).push(s)});
+    Object.keys(byStart).sort((a,b)=>mins(a)-mins(b)).forEach(st=>{
+      const grp=byStart[st];
+      if(grp.length===1){
+        const s=grp[0];
+        html+=`<div class="wsess" style="border-left-color:${topicColor(s.topic)}">
+          <div class="wtime">${s.start}–${s.end}</div>
+          <div class="wtheme">${esc(s.theme)}</div>
+          <div class="wroom">${esc(s.room)} · ${esc(TOPICS[s.topic].name)}</div></div>`;
+      } else {
+        html+=`<div class="wsess par"><div class="wtime">${grp[0].start}–${grp[0].end}</div>
+          <div class="par-label">▶ ${grp.length} parallel options</div>`;
+        grp.forEach(s=>{
+          html+=`<div class="wmini" data-jumpday="${d.name}" style="border-left:3px solid ${topicColor(s.topic)};padding-left:7px;margin:3px 0">
+            <b>${esc(s.room)}:</b> ${esc(s.theme)}</div>`;
+        });
+        html+=`</div>`;
+      }
+    });
+    if(!sess.length) html+=`<div class="wroom" style="color:var(--faint)">Morning plenary / see by-day</div>`;
+    html+=`</div>`;
+  });
+  html+=`</div>`;
+  v.innerHTML=html;
+}
+
+/* ============================ SEARCH / LIST ============================ */
+function talkCard(t,showDay){
+  const isFav=favs.has(t.id);
+  const nb=noteCounts[t.id]?` · 💬 ${noteCounts[t.id]}`:'';
+  return `<div class="card" style="border-left-color:${topicColor(t.topic)}">
+    <div style="flex:1;min-width:0">
+      <div class="meta">${showDay?`<span>${t.day}</span>`:''}<span>${t.start}–${t.end}</span>
+        <span>${esc(t.room)}</span><span style="color:${topicColor(t.topic)}">${esc(TOPICS[t.topic].name)}</span>${t.invited?'<span class="invited">invited</span>':''}<span>${nb}</span></div>
+      <div class="ct" data-open="${t.id}">${esc(t.title)}</div>
+      <div class="cs">${esc(t.speaker)} <span style="color:var(--faint)">· ${esc(t.theme)}</span></div>
+      <div class="tags">${t.tags.map(x=>`<span class="tg">${esc(x)}</span>`).join('')}</div>
+    </div>
+    <button class="cstar ${isFav?'on':''}" data-fav="${t.id}">★</button>
+  </div>`;
+}
+function renderSearch(){
+  const v=document.getElementById('view');
+  const res=TALKS.filter(passFilters);
+  if(!res.length){ v.innerHTML=`<div class="empty">No talks match your filters.</div>`; return; }
+  const order=DAYS.map(d=>d.name);
+  res.sort((a,b)=> order.indexOf(a.day)-order.indexOf(b.day) || mins(a.start)-mins(b.start) || a.room.localeCompare(b.room));
+  let html=`<p class="hint">${res.length} talk${res.length>1?'s':''} match. Click a title for details &amp; shared notes.</p>`;
+  let curDay='';
+  html+='<div class="list">';
+  res.forEach(t=>{ if(t.day!==curDay){curDay=t.day; html+=`</div><div class="daygroup">${curDay}</div><div class="list">`;}
+    html+=talkCard(t,false);});
+  html+='</div>';
+  v.innerHTML=html;
+}
+
+/* ============================ MY AGENDA ============================ */
+function renderAgenda(){
+  const v=document.getElementById('view');
+  const mine=TALKS.filter(t=>favs.has(t.id));
+  if(!mine.length){ v.innerHTML=`<div class="empty">No starred talks yet.<br>Tap ★ on any talk to build your personal agenda — conflicts between parallel sessions get flagged here.</div>`; return; }
+  const order=DAYS.map(d=>d.name);
+  mine.sort((a,b)=> order.indexOf(a.day)-order.indexOf(b.day) || mins(a.start)-mins(b.start));
+  let html=`<p class="hint">Your starred talks (${mine.length}), saved on this device. Overlapping picks are flagged so you can decide.</p>`;
+  let curDay='';
+  const byDay={};
+  mine.forEach(t=>{(byDay[t.day]=byDay[t.day]||[]).push(t)});
+  order.filter(d=>byDay[d]).forEach(day=>{
+    html+=`<div class="daygroup">${day}</div>`;
+    const arr=byDay[day];
+    // conflict detection
+    for(let i=0;i<arr.length;i++){
+      for(let j=i+1;j<arr.length;j++){
+        if(mins(arr[i].start)<mins(arr[j].end) && mins(arr[j].start)<mins(arr[i].end) && arr[i].room!==arr[j].room){
+          html+=`<div class="conflict">⚠ Clash ${arr[i].start}–: <b>${esc(arr[i].speaker)}</b> (${esc(arr[i].room)}) vs <b>${esc(arr[j].speaker)}</b> (${esc(arr[j].room)})</div>`;
+        }
+      }
+    }
+    html+='<div class="list">'+arr.map(t=>talkCard(t,false)).join('')+'</div>';
+  });
+  v.innerHTML=html;
+}
+
+/* ============================ ABOUT / NOTES ============================ */
+function renderAbout(){
+  const v=document.getElementById('view');
+  const status = fbReady
+    ? `<p style="color:var(--t2)">✅ Shared notes are <b>live</b>. Anything you or your group writes on a talk is visible to everyone using this link.</p>`
+    : `<p style="color:var(--t3)">⚠ Shared notes are <b>not connected yet</b>. The schedule, search and your starred agenda all work regardless. To turn on group notes &amp; photos, add a Firebase config (see <code>README.md</code>) — a one-time ~5-minute step.</p>`;
+  v.innerHTML=`
+    <div class="nostore" style="border-style:solid">
+      <h4 style="margin-top:0">About this guide</h4>
+      <p>A personal navigator for <b>Exoplanets 6 (Porto 2026)</b>. Built from the official programme PDF.</p>
+      <ul>
+        <li><b>By day</b> — full timetable with parallel rooms side-by-side, so you can see your afternoon options at a glance.</li>
+        <li><b>Week overview</b> — the whole week; parallel blocks list the competing themes.</li>
+        <li><b>Search all</b> — filter by topic, room, theme/tag, or free text (planet name, instrument, speaker…).</li>
+        <li><b>⭐ My agenda</b> — star talks to build your plan; clashes between parallel sessions are flagged.</li>
+        <li><b>💬 Notes</b> — open any talk to read &amp; add shared notes and photos with your group.</li>
+      </ul>
+      ${status}
+      <p style="font-size:12.5px;color:var(--muted)">Your name for notes: <b>${myName?esc(myName):'(not set)'}</b> · <button class="clearbtn" data-setname="1">change</button></p>
+      <p style="font-size:12px;color:var(--faint)">Topics:
+        ${[1,2,3,4].map(n=>`<span class="dot" style="background:${topicColor(n)};display:inline-block;width:9px;height:9px;border-radius:50%"></span> ${esc(TOPICS[n].long)}`).join(' &nbsp; ')}
+      </p>
+    </div>`;
+}
+
+/* ============================ TALK MODAL + NOTES ============================ */
+let openTalkId=null, unsub=null, pendingPhotos=[];
+function openTalk(id){
+  openTalkId=id; pendingPhotos=[];
+  const t=talkById[id]; const s=sessById[t.sid];
+  const m=document.getElementById('modal');
+  m.querySelector? null:null;
+  m.innerHTML=`
+    <div class="mhead" style="border-top-color:${topicColor(t.topic)}">
+      <button class="x" data-close="1">✕</button>
+      <div class="mmeta"><span>${t.day} · ${t.start}–${t.end}</span><span>${esc(t.room)}</span>
+        <span style="color:${topicColor(t.topic)}">${esc(TOPICS[t.topic].name)}</span>${t.invited?'<span class="invited">invited</span>':''}</div>
+      <h2>${esc(t.title)}</h2>
+      <div class="mspk">👤 ${esc(t.speaker)} <button class="cstar ${favs.has(t.id)?'on':''}" data-fav="${t.id}" style="font-size:22px;vertical-align:-3px">★</button></div>
+      <div class="mtheme">🎯 Session: <b>${esc(s.theme)}</b>${s.chair&&s.chair!=='—'?' · chair '+esc(s.chair):''}<br>
+        <span style="color:var(--faint)">${esc(TOPICS[t.topic].long)}</span></div>
+      <div class="tags" style="margin-top:8px">${t.tags.map(x=>`<span class="tg">${esc(x)}</span>`).join('')}</div>
+    </div>
+    <div class="mbody">
+      <h4>💬 Group notes <span id="ncount" style="color:var(--faint);font-weight:400"></span></h4>
+      <div id="notes"></div>
+      <div id="noteform"></div>
+    </div>`;
+  document.getElementById('mask').classList.add('show');
+  renderNoteForm();
+  subscribeNotes(id);
+}
+function closeModal(){
+  document.getElementById('mask').classList.remove('show');
+  if(unsub){unsub();unsub=null;} openTalkId=null;
+}
+function renderNoteForm(){
+  const el=document.getElementById('noteform');
+  if(!fbReady){
+    el.innerHTML=`<div class="nostore">📡 Shared notes aren't connected. Add a Firebase config (see README) to let your group post and read notes &amp; photos here.</div>`;
+    return;
+  }
+  el.innerHTML=`<div class="noteform">
+    <textarea id="ntext" placeholder="Your take on this talk — key result, questions, follow-ups…"></textarea>
+    <div class="thumbs" id="thumbs"></div>
+    <div class="formrow">
+      <label class="filebtn">📷 Add photo<input type="file" id="nfile" accept="image/*" multiple style="display:none"></label>
+      <span style="flex:1"></span>
+      <button class="btn" id="postBtn">Post as ${esc(myName||'…')}</button>
+    </div>
+  </div>`;
+  document.getElementById('nfile').addEventListener('change',handleFiles);
+  document.getElementById('postBtn').addEventListener('click',postNote);
+}
+function renderThumbs(){
+  const el=document.getElementById('thumbs'); if(!el)return;
+  el.innerHTML=pendingPhotos.map((p,i)=>`<div class="tw"><img src="${p}"><button class="rm" data-rmphoto="${i}">✕</button></div>`).join('');
+}
+function handleFiles(e){
+  const files=[...e.target.files]; e.target.value='';
+  files.forEach(f=>compressImage(f,dataUrl=>{pendingPhotos.push(dataUrl);renderThumbs();}));
+}
+function compressImage(file,cb){
+  const img=new Image(); const rd=new FileReader();
+  rd.onload=()=>{img.onload=()=>{
+    const max=1100; let{width:w,height:h}=img;
+    if(w>h&&w>max){h=h*max/w;w=max;} else if(h>max){w=w*max/h;h=max;}
+    const cv=document.createElement('canvas');cv.width=w;cv.height=h;
+    cv.getContext('2d').drawImage(img,0,0,w,h);
+    cb(cv.toDataURL('image/jpeg',0.62));
+  };img.src=rd.result;};
+  rd.readAsDataURL(file);
+}
+function subscribeNotes(id){
+  if(unsub){unsub();unsub=null;}
+  if(!fbReady) return;
+  unsub=db.collection('notes').where('talkId','==',id).onSnapshot(snap=>{
+    const arr=[]; snap.forEach(d=>arr.push({_id:d.id,...d.data()}));
+    arr.sort((a,b)=>(a.ts||0)-(b.ts||0));
+    const el=document.getElementById('notes'); if(!el)return;
+    document.getElementById('ncount').textContent = arr.length?`(${arr.length})`:'';
+    if(!arr.length){ el.innerHTML=`<p style="color:var(--faint);font-size:13px">No notes yet — be the first to share your take.</p>`; return; }
+    el.innerHTML=arr.map(n=>{
+      const when=n.ts?new Date(n.ts).toLocaleString('en',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+      const ph=(n.photos||[]).map(p=>`<img src="${p}" data-bigimg="${p}">`).join('');
+      const mine=n.name===myName;
+      return `<div class="note">
+        <div class="nh"><b>${esc(n.name||'Anon')}</b><span>${when}${mine?` · <button class="del" data-delnote="${n._id}">delete</button>`:''}</span></div>
+        ${n.text?`<div class="ntext">${esc(n.text)}</div>`:''}
+        ${ph?`<div class="nph">${ph}</div>`:''}
+      </div>`;
+    }).join('');
+  },err=>{
+    const el=document.getElementById('notes'); if(el)el.innerHTML=`<div class="nostore">Couldn't load notes: ${esc(err.message)}. Check your Firestore rules allow reads.</div>`;
+  });
+}
+function postNote(){
+  if(!myName){ ensureName(()=>postNote()); return; }
+  const text=(document.getElementById('ntext').value||'').trim();
+  if(!text && !pendingPhotos.length) return;
+  const btn=document.getElementById('postBtn'); btn.disabled=true; btn.textContent='Posting…';
+  db.collection('notes').add({
+    talkId:openTalkId, name:myName, text, photos:pendingPhotos.slice(0,4), ts:Date.now()
+  }).then(()=>{
+    document.getElementById('ntext').value=''; pendingPhotos=[]; renderThumbs();
+    btn.disabled=false; btn.textContent='Post as '+(myName||'…');
+  }).catch(e=>{ alert('Could not post: '+e.message); btn.disabled=false; btn.textContent='Post'; });
+}
+
+/* ============================ NAME ============================ */
+function ensureName(cb){
+  const n=prompt('Your name (shown on the notes you post):', myName||'');
+  if(n && n.trim()){ myName=n.trim(); LS.set('exo6_name',myName); renderWho(); if(cb)cb(); }
+}
+function renderWho(){
+  document.getElementById('whoBox').innerHTML = myName
+    ? `👤 <b>${esc(myName)}</b> <button data-setname="1">change</button>`
+    : `<button data-setname="1" style="color:var(--accent)">👤 Set your name</button>`;
+}
+
+/* ============================ FAVOURITES ============================ */
+function toggleFav(id){
+  if(favs.has(id))favs.delete(id); else favs.add(id);
+  LS.set('exo6_favs',[...favs]);
+  renderTabs(); rerender();
+  // update any open star instantly
+  document.querySelectorAll(`[data-fav="${id}"]`).forEach(b=>b.classList.toggle('on',favs.has(id)));
+}
+
+/* ============================ ROUTER ============================ */
+function rerender(){
+  renderControls();
+  ({day:renderDay,week:renderWeek,search:renderSearch,agenda:renderAgenda,about:renderAbout}[state.view]||renderDay)();
+}
+function setView(v){ state.view=v; saveFilters(); renderTabs(); rerender(); window.scrollTo(0,0); }
+
+/* ============================ EVENTS ============================ */
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-tab],[data-day],[data-topic],[data-room],[data-favonly],[data-clear],[data-open],[data-fav],[data-close],[data-setname],[data-jumpday],[data-delnote],[data-rmphoto],[data-bigimg]');
+  if(!el)return;
+  const d=el.dataset;
+  if(d.tab){ setView(d.tab); }
+  else if(d.day){ state.day=d.day; saveFilters(); rerender(); }
+  else if(d.jumpday){ state.day=d.jumpday; setView('day'); }
+  else if(d.topic){ const k=d.topic; state.topics.has(k)?state.topics.delete(k):state.topics.add(k); saveFilters(); rerender(); }
+  else if(d.room){ const k=d.room; state.rooms.has(k)?state.rooms.delete(k):state.rooms.add(k); saveFilters(); rerender(); }
+  else if(d.favonly!==undefined){ state.favOnly=!state.favOnly; rerender(); }
+  else if(d.clear){ state.topics.clear(); saveFilters(); rerender(); }
+  else if(d.fav){ e.stopPropagation(); toggleFav(d.fav); }
+  else if(d.open){ openTalk(d.open); }
+  else if(d.close!==undefined){ closeModal(); }
+  else if(d.setname!==undefined){ ensureName(()=>{ if(state.view==='about')renderAbout(); if(openTalkId)renderNoteForm(); }); }
+  else if(d.delnote){ if(confirm('Delete your note?')) db.collection('notes').doc(d.delnote).delete(); }
+  else if(d.rmphoto!==undefined){ pendingPhotos.splice(+d.rmphoto,1); renderThumbs(); }
+  else if(d.bigimg){ const iv=document.getElementById('imgview'); document.getElementById('imgviewImg').src=d.bigimg; iv.classList.add('show'); }
+});
+document.getElementById('imgview').addEventListener('click',()=>document.getElementById('imgview').classList.remove('show'));
+document.getElementById('mask').addEventListener('click',e=>{ if(e.target.id==='mask')closeModal(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeModal();document.getElementById('imgview').classList.remove('show');} });
+document.addEventListener('input',e=>{
+  if(e.target.id==='q'){ state.q=e.target.value; ({search:renderSearch,day:renderDay,agenda:renderAgenda,week:renderWeek}[state.view]||renderSearch)(); }
+});
+document.addEventListener('change',e=>{
+  if(e.target.id==='tagSel'){ state.tag=e.target.value; saveFilters(); rerender(); }
+});
+
+/* ============================ FIREBASE ============================ */
+function initFirebase(){
+  const cfg=window.FIREBASE_CONFIG;
+  if(!cfg || !cfg.projectId){ fbReady=false; return; }
+  try{
+    firebase.initializeApp(cfg);
+    db=firebase.firestore();
+    fbReady=true;
+    // global listener for note counts (badges)
+    db.collection('notes').onSnapshot(snap=>{
+      const c={}; snap.forEach(d=>{const t=d.data().talkId; c[t]=(c[t]||0)+1;});
+      noteCounts=c;
+      if(state.view==='day'||state.view==='search'||state.view==='agenda') rerender();
+    },err=>console.warn('notes listener:',err.message));
+  }catch(e){ console.warn('Firebase init failed:',e.message); fbReady=false; }
+}
+
+/* ============================ BOOT ============================ */
+document.getElementById('subtitle').textContent=DATA.meta.subtitle;
+initFirebase();
+renderWho(); renderTabs(); rerender();
+if(!myName) setTimeout(()=>{ if(!myName) renderWho(); },300);
+</script>
+</body>
+</html>
