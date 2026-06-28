@@ -349,23 +349,30 @@ function renderDay(){
   /* ---- time-block options summary (the "what are my options" view) ---- */
   const sess=SESSIONS.filter(s=>s.day===day).sort((a,b)=>mins(a.start)-mins(b.start));
   const byStart={}; sess.forEach(s=>{(byStart[s.start+'|'+s.end]=byStart[s.start+'|'+s.end]||[]).push(s)});
-  let slots='';
+  const filterActive=!!(state.q||state.topics.size||state.tag||state.favOnly);
+  let slots='', dayMatchCount=0;
   Object.keys(byStart).sort((a,b)=>mins(a.split('|')[0])-mins(b.split('|')[0])).forEach(k=>{
-    const grp=byStart[k].filter(s=>!state.rooms.size||state.rooms.has(s.room));
-    if(!grp.length) return;
     const [st,en]=k.split('|');
-    const parallel=byStart[k].length>1;
+    const opts=byStart[k]
+      .filter(s=>!state.rooms.size||state.rooms.has(s.room))
+      .map(s=>({s,mt:s.talks.map(id=>talkById[id]).filter(passFilters)}))
+      .filter(o=>o.mt.length);
+    if(!opts.length) return;
+    const parallelTotal=byStart[k].length;
     slots+=`<div class="slot"><div class="stime">🕑 ${st}–${en}
-      ${parallel?`<span class="par-tag">▶ ${byStart[k].length} parallel — choose one</span>`:'<span style="color:var(--faint);font-weight:400">single track</span>'}</div>
-      <div class="opts">`+grp.map(s=>{
-        const first=talkById[s.talks[0]];
-        const names=s.talks.map(id=>talkById[id].speaker).slice(0,3).join(', ')+(s.talks.length>3?` +${s.talks.length-3} more`:'');
+      ${parallelTotal>1?`<span class="par-tag">▶ ${parallelTotal} parallel — choose one</span>`:'<span style="color:var(--faint);font-weight:400">single track</span>'}</div>
+      <div class="opts">`+opts.map(({s,mt})=>{
+        dayMatchCount+=mt.length;
+        const names=mt.map(t=>t.speaker).slice(0,3).join(', ')+(mt.length>3?` +${mt.length-3} more`:'');
+        const matchTag=filterActive?` <span style="color:var(--accent);font-weight:400">· ${mt.length} match${mt.length>1?'es':''}</span>`:'';
         return `<div class="opt" style="border-left-color:${topicColor(s.topic)}">
           <div class="or">${esc(s.room)} · ${esc(TOPICS[s.topic].name)}${s.chair&&s.chair!=='—'?' · chair '+esc(s.chair):''}</div>
-          <div class="oth">${esc(s.theme)}</div>
+          <div class="oth">${esc(s.theme)}${matchTag}</div>
           <div class="ott">${esc(names)}</div></div>`;
       }).join('')+`</div></div>`;
   });
+  const showGrid = !(filterActive && dayMatchCount===0);
+  const weekMatches = filterActive ? TALKS.filter(passFilters).length : 0;
 
   /* ---- detailed timetable grid ---- */
   const allStarts=dayTalks.map(t=>mins(t.start)).concat(dayEvents.filter(e=>['break','plenary','logistics'].includes(e.type)).map(e=>mins(e.start)));
@@ -404,14 +411,19 @@ function renderDay(){
   const dd=new Date(DAYS.find(d=>d.name===day).date+'T00:00');
   const evening = dayEvents.filter(e=>e.type==='social'||(e.type==='plenary'&&/Welcome/.test(e.label))).map(e=>
     `<div><b>${e.start}${e.end?'–'+e.end:''}</b> · ${esc(e.label)}</div>`).join('');
+  const hint = filterActive
+    ? `Showing matches on <b>${day} ${dd.getDate()} ${dd.toLocaleString('en',{month:'long'})}</b> — <b>${dayMatchCount}</b> talk${dayMatchCount===1?'':'s'} (of ${weekMatches} this week). Clear filters to see the full day.`
+    : `Showing <b>${day} ${dd.getDate()} ${dd.toLocaleString('en',{month:'long'})}</b>. The cards below summarise each time-slot's options (themes per room); the grid underneath is the detailed timetable. Tap any talk for details &amp; shared notes; tap ★ to add to your agenda.`;
+  const emptyBlock = `<div class="empty">No matches on ${day}.${weekMatches?` There ${weekMatches===1?'is':'are'} <b>${weekMatches}</b> match${weekMatches===1?'':'es'} on other days — try another day above, or use <b>🔍 Search all</b> to see them together.`:` Try a different search or <button class="clearbtn" data-clear="filters">clear all filters</button>.`}</div>`;
   v.innerHTML=`
-    <p class="hint">Showing <b>${day} ${dd.getDate()} ${dd.toLocaleString('en',{month:'long'})}</b>. The cards below summarise each time-slot's options (themes per room); the grid underneath is the detailed timetable. Tap any talk for details &amp; shared notes; tap ★ to add to your agenda.</p>
-    <div class="slots">${slots}</div>
-    <h4 style="font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:0 0 6px">Detailed timetable</h4>
-    <div style="--cols:${cols.length}">
-      <div class="tt-head">${head}</div>
-      <div class="tt-grid"><div class="axis">${axis}</div>${body}</div>
-    </div>
+    <p class="hint">${hint}</p>
+    ${showGrid ? `
+      <div class="slots">${slots}</div>
+      <h4 style="font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:0 0 6px">Detailed timetable</h4>
+      <div style="--cols:${cols.length}">
+        <div class="tt-head">${head}</div>
+        <div class="tt-grid"><div class="axis">${axis}</div>${body}</div>
+      </div>` : emptyBlock}
     ${evening?`<div class="evening">🌙 <b>Evening / off-programme</b><br>${evening}</div>`:''}`;
 }
 
@@ -676,7 +688,7 @@ document.addEventListener('click',e=>{
   else if(d.topic){ const k=d.topic; state.topics.has(k)?state.topics.delete(k):state.topics.add(k); saveFilters(); rerender(); }
   else if(d.room){ const k=d.room; state.rooms.has(k)?state.rooms.delete(k):state.rooms.add(k); saveFilters(); rerender(); }
   else if(d.favonly!==undefined){ state.favOnly=!state.favOnly; rerender(); }
-  else if(d.clear){ state.topics.clear(); saveFilters(); rerender(); }
+  else if(d.clear){ if(d.clear==='filters'){ state.topics.clear(); state.rooms.clear(); state.tag=''; state.q=''; state.favOnly=false; } else { state.topics.clear(); } saveFilters(); rerender(); }
   else if(d.fav){ e.stopPropagation(); toggleFav(d.fav); }
   else if(d.open){ openTalk(d.open); }
   else if(d.close!==undefined){ closeModal(); }
